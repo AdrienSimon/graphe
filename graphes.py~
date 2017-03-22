@@ -1,0 +1,156 @@
+#coding: utf-8
+
+class GrapheOriente:
+
+	def __init__(self, ordre):
+		
+		#les sommets seront 0,1,..., ordre -1
+		self.ordre = ordre
+		
+		#dictionnaire sommet -> liste de sommets
+		self.voisins_sortants = {}
+		for sommet in range(ordre):
+			self.voisins_sortants[sommet] = []
+	
+	def __str__(self):
+		string = "Graphe \n"
+		string += str(self.ordre) + " sommets\n"
+		for sommet in range(self.ordre):
+			string += "Voisins de " + str(sommet) + " " + str(self.voisins_sortants[sommet]) + " \n"
+		return string
+
+	def ajouter_arc(self, debut, fin):
+		"""ajoute arc entre debut et fin"""
+		
+		self.voisins_sortants[debut].append(fin)
+
+	def sommets_accessibles(self, sommet):
+		"""recupere les voisins accessibles"""
+		attente = []
+		attente.append(sommet)
+		composantes_accessibles = []
+		while attente:
+			courant = attente.pop()
+			if courant not in composantes_accessibles:
+				composantes_accessibles.append(courant)
+				for i in self.voisins_sortants[courant]:
+					attente.append(i)
+		return composantes_accessibles
+
+	def nombre_fortement_connexes_naif(self):
+		accessible = {}
+		composante = {}
+		compteur = 0
+		for v in xrange(self.ordre):
+			accessible[v] = GrapheOriente.sommets_accessibles(self,v)
+			composante[v] = -1
+		for v1 in xrange(self.ordre):
+			if composante[v1] == -1:
+				for v2 in accessible[v1]:
+					if v1 in accessible[v2]:
+						composante[v1] = compteur
+						composante[v2] = compteur
+				compteur +=1
+		return compteur
+
+	def parcours_profondeur(self):
+		def pp_etape(self,x):
+			connu[x] = True
+			for sortant in self.voisins_sortants[x]:
+				if connu[sortant] == False:
+					connu[sortant] = True
+					pred[sortant].append(x)
+					pp_etape(self, sortant)
+			numSommet.append(x)
+			
+		numSommet = []
+		connu = [False for i in xrange(self.ordre)]
+		pred = [[] for i in xrange(self.ordre)]
+		for i in xrange(self.ordre):
+			if connu[i] == False:
+				pp_etape(self,i)
+		return numSommet
+
+	
+
+def kosaraju(graphe):
+	connu = {}
+	postfixe = GrapheOriente.parcours_profondeur(graphe)
+	graphe_inverse = lire_graphe_fichier2(fichier)
+	for v in xrange(graphe.ordre):
+		connu[v] = False
+	while False in connu:
+		
+
+
+def lire_graphe_fichier(nom_du_fichier):
+	"""renvoi un graphe lu dans le fichier"""
+	
+	f = open(nom_du_fichier, 'r')
+	lignes = f.readlines()
+	f.close()
+	
+	ordre = 0
+	for ligne in lignes:
+		mots = ligne.split()
+		if len(mots) >= 2 and mots[0] == "ordre":
+			ordre = int(mots[1])
+			graphe = GrapheOriente(ordre)
+		if len(mots) >= 3: 
+			if mots[0] == "E" or mots[0] == "A":
+				debut = int(mots[1])
+				fin = int(mots[2])
+				graphe.ajouter_arc(debut, fin)
+	return graphe
+
+
+def lire_graphe_fichier2(nom_du_fichier):
+	"""renvoi un graphe lu dans le fichier"""
+	
+	f = open(nom_du_fichier, 'r')
+	lignes = f.readlines()
+	f.close()
+	
+	ordre = 0
+	for ligne in lignes:
+		mots = ligne.split()
+		if len(mots) >= 2 and mots[0] == "ordre":
+			ordre = int(mots[1])
+			graphe = GrapheOriente(ordre)
+		if len(mots) >= 3: 
+			if mots[0] == "E" or mots[0] == "A":
+				debut = int(mots[1])
+				fin = int(mots[2])
+				graphe.ajouter_arc(fin, debut)
+	return graphe
+
+fichier = "digraph0.txt"
+graphe = lire_graphe_fichier(fichier)
+#print graphe
+#print GrapheOriente.sommets_accessibles(graphe,4)
+#print "Nombre de composantes fortement connexes :",GrapheOriente.nombre_fortement_connexes_naif(graphe)
+print kosaraju(graphe)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,102 @@
+#coding: utf-8
+
+from collections import deque
+
+# position = sommet
+# ex: [ [2,3,0], [6,5,1], [4,7,8] ]
+# le 0 est la case vide
+
+class Position:
+    def __init__(self, tableau):
+        self.tableau = tableau
+
+        # chercher les coordonnes zi,zj du 0 du tableau
+        for i in xrange(3):
+            for j in xrange(3):
+                if self.tableau[i][j] == 0:
+                    self.zi= i
+                    self.zj= j
+                    break
+
+    def __hash__(self):
+        n = 0
+        #on cree un hash en prenant les entrees
+        #du tableau comme les decimales d'un entier
+        for i in xrange(3):
+            for j in xrange(3):
+                n = self.tableau[i][j] + 10*n
+        return n
+
+    def __eq__(self, other):
+        return self.__hash__() == other.__hash__()
+
+    def __ne__(self, other):
+        return self.__hash__() != other.__hash__()
+
+    def voisins(self):
+        """renvoie la liste des positions voisines"""
+        liste_voisins = []
+        for di,dj in [ [1,0], [0,1], [-1,0], [0,-1] ]:
+            vi = self.zi + di  #i de la case a côté
+            vj = self.zj + dj  #j de la case a côté
+            if 0<= vi <3 and 0<= vj <3:   #la case existe
+                #on cree une copie de position
+                vois = []
+                for i in xrange(3):
+                    vois.append( list( self.tableau[i] ))
+
+                #mais en echangeant zi,zj avec vi,vj
+                vois[self.zi][self.zj] = self.tableau[vi][vj]
+                vois[vi][vj] = self.tableau[self.zi][self.zj]
+            
+                liste_voisins.append(Position(vois))
+
+        return liste_voisins
+
+
+def parcours_largeur_creatif(depart, destination):
+    """ parcours en largeur depuis la position 'depart' donnee,
+    en construisant le graphe au fur et a mesure
+    on arrete quand on decouvre 'destination' """
+    liste_etapes=[]
+    distance = {}
+    distance[ depart ] = 0
+
+    pred = {}
+    pred[ depart] = None
+
+    attente = deque([ depart] )
+    conteur=0
+    while attente:
+        courant = attente.popleft()
+        if courant.tableau == destination.tableau:
+            break;
+        for voisin in courant.voisins():
+            if voisin.tableau==destination.tableau:
+                break;
+            if voisin not in distance:
+                
+                pred[voisin] = courant
+                distance[voisin] = distance[courant] + 1
+                attente.append(voisin)
+    if destination in pred:
+        conteur=0
+        liste_etapes=[]
+        while courant != depart:
+            liste_etapes.append(courant)
+            courant=pred[courant]
+        liste_etapes.append(depart)
+    n=len(liste_etapes)
+    for i in range(n):
+        print "etape", i
+        print liste_etapes[n-1-i].tableau
+
+pos_depart = Position([ [6,4,1], [7,3,8], [2,5,0] ])
+pos_dest = Position([ [1,2,3], [4,5,6], [7,8,0] ])
+parcours_largeur_creatif(pos_depart, pos_dest)
+
+
+
+
+
+
